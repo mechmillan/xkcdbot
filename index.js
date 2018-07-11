@@ -16,7 +16,11 @@ bot.on("start", () => {
   '@xkcdbot random', '@xkcdbot get <integer value>', \
   '@xkcdbot help'`;
 
-  bot.postMessageToChannel("general", `I serve up XKCD comics! ${helpMessage}`, params);
+  bot.postMessageToChannel(
+    "general",
+    `I serve up XKCD comics! ${helpMessage}`,
+    params
+  );
 });
 
 // error handler
@@ -56,23 +60,11 @@ function randomXKCD() {
   let upperLimit = 2018;
   let randomNum = Math.floor(Math.random() * upperLimit) + 1;
 
-  axios
-    .get(`http://xkcd.com/${randomNum}/info.0.json`)
-    .then(res => {
-      const img = res.data.img;
-      const title = res.data.title;
-
-      const params = {
-        icon_emoji: ":thinking_face:"
-      };
-
-      bot.postMessageToChannel("general", `${title}: ${img}`, params);
-    })
-    .catch(err => console.log(err));
+  fetchComic(randomNum);
 }
 
 function getXKCD(number) {
-  if (typeof number !== 'number') return;
+  if (typeof number !== "number") return;
   let lowerLimit = 1;
   let upperLimit = 2018;
   let outOfRangeMessage = `Comic number out of range!\
@@ -87,18 +79,22 @@ function getXKCD(number) {
   } else if (number > upperLimit) {
     bot.postMessageToChannel("general", outOfRangeMessage, params);
   } else {
-    axios
-      .get(`http://xkcd.com/${number}/info.0.json`)
-      .then(res => {
-        const img = res.data.img;
-        const title = res.data.title;
-
-        const params = {
-          icon_emoji: ":thinking_face:"
-        };
-
-        bot.postMessageToChannel("general", `${title}: ${img}`, params);
-      })
-      .catch(err => console.log(err));
+    fetchComic(number);
   }
+}
+
+function fetchComic(comicNumber) {
+  axios
+    .get(`http://xkcd.com/${comicNumber}/info.0.json`)
+    .then(res => {
+      const img = res.data.img;
+      const title = res.data.title;
+
+      const params = {
+        icon_emoji: ":thinking_face:"
+      };
+
+      bot.postMessageToChannel("general", `${title}: ${img}`, params);
+    })
+    .catch(err => console.log(err));
 }
